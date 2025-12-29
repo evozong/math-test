@@ -361,7 +361,7 @@ function App() {
                     value={answer}
                     onChange={(e) => setAnswer(e.target.value)}
                     placeholder="?"
-                    disabled={!testActive || awaitingNext}
+                    disabled={!testActive}
                   />
                 </div>
                 <div className="actions">
