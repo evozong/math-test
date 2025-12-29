@@ -24,3 +24,9 @@ Build a math test site:
 
 -- Ins 2 --
 The cursor should focus on the textbox every time the question appears.
+
+-- Ins 3 --
+- On the results page, show time elapsed down to milliseconds.
+- Change the delay of the "correct" overlay to 300ms
+- The overlay should show up over the question box
+

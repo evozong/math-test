@@ -60,8 +60,18 @@ const buildQuestionSet = (types: QuestionType[], count = QUESTION_COUNT) => {
 
 const formatTime = (seconds: number) => {
   const mins = Math.floor(seconds / 60)
-  const secs = seconds % 60
+  const secs = Math.floor(seconds % 60)
   return `${mins}:${secs.toString().padStart(2, '0')}`
+}
+
+const formatTimeMs = (ms: number) => {
+  const totalSeconds = ms / 1000
+  const mins = Math.floor(totalSeconds / 60)
+  const secs = Math.floor(totalSeconds % 60)
+  const millis = Math.floor(ms % 1000)
+  return `${mins}:${secs.toString().padStart(2, '0')}.${millis
+    .toString()
+    .padStart(3, '0')}`
 }
 
 type View = 'home' | 'test' | 'results'
@@ -76,8 +86,8 @@ function App() {
   const [countdown, setCountdown] = useState(3)
   const [countdownActive, setCountdownActive] = useState(false)
   const [testActive, setTestActive] = useState(false)
-  const [elapsedSeconds, setElapsedSeconds] = useState(0)
-  const [totalTime, setTotalTime] = useState<number | null>(null)
+  const [elapsedMs, setElapsedMs] = useState(0)
+  const [totalTimeMs, setTotalTimeMs] = useState<number | null>(null)
   const [answer, setAnswer] = useState('')
   const [overlay, setOverlay] = useState<'correct' | 'wrong' | null>(null)
   const [awaitingNext, setAwaitingNext] = useState(false)
@@ -110,14 +120,14 @@ function App() {
     if (stopwatchRef.current) {
       clearInterval(stopwatchRef.current)
     }
-    startTimeRef.current = Date.now()
-    setElapsedSeconds(0)
+    startTimeRef.current = performance.now()
+    setElapsedMs(0)
     stopwatchRef.current = window.setInterval(() => {
-      if (startTimeRef.current) {
-        const seconds = Math.floor((Date.now() - startTimeRef.current) / 1000)
-        setElapsedSeconds(seconds)
+      if (startTimeRef.current !== null) {
+        const ms = performance.now() - startTimeRef.current
+        setElapsedMs(ms)
       }
-    }, 1000)
+    }, 100)
   }
 
   const startCountdown = () => {
@@ -154,8 +164,8 @@ function App() {
     setAnswer('')
     setOverlay(null)
     setAwaitingNext(false)
-    setElapsedSeconds(0)
-    setTotalTime(null)
+    setElapsedMs(0)
+    setTotalTimeMs(null)
     setView('test')
     startCountdown()
   }
@@ -165,10 +175,10 @@ function App() {
     if (stopwatchRef.current) {
       clearInterval(stopwatchRef.current)
     }
-    const secondsTaken = startTimeRef.current
-      ? Math.round((Date.now() - startTimeRef.current) / 1000)
-      : elapsedSeconds
-    setTotalTime(secondsTaken)
+    const msTaken = startTimeRef.current
+      ? performance.now() - startTimeRef.current
+      : elapsedMs
+    setTotalTimeMs(msTaken)
     setView('results')
   }
 
@@ -186,7 +196,7 @@ function App() {
       { question: currentQuestion, userAnswer: numericAnswer, correct: isCorrect },
     ]
     const isLast = updatedResponses.length === questions.length
-    const delay = isCorrect ? 500 : 1000
+    const delay = isCorrect ? 300 : 1000
 
     setOverlay(isCorrect ? 'correct' : 'wrong')
     setAwaitingNext(true)
@@ -317,7 +327,7 @@ function App() {
             </div>
             <div className="stopwatch">
               <span className="dot" />
-              <span>{formatTime(elapsedSeconds)}</span>
+              <span>{formatTime(elapsedMs / 1000)}</span>
             </div>
           </div>
 
@@ -353,6 +363,11 @@ function App() {
                   </button>
                   <p className="muted small">Press Enter or tap Submit</p>
                 </div>
+                {overlay && (
+                  <div className={`overlay question-overlay ${overlay}`}>
+                    <span>{overlay === 'correct' ? 'O' : 'X'}</span>
+                  </div>
+                )}
               </form>
             )}
           </div>
@@ -376,7 +391,9 @@ function App() {
               </div>
               <div>
                 <p className="muted small">Time</p>
-                <h3>{totalTime !== null ? formatTime(totalTime) : formatTime(elapsedSeconds)}</h3>
+                <h3>
+                  {totalTimeMs !== null ? formatTimeMs(totalTimeMs) : formatTimeMs(elapsedMs)}
+                </h3>
               </div>
             </div>
           </div>
@@ -417,11 +434,6 @@ function App() {
         </section>
       )}
 
-      {overlay && (
-        <div className={`overlay ${overlay}`}>
-          <span>{overlay === 'correct' ? 'O' : 'X'}</span>
-        </div>
-      )}
     </div>
   )
 }

@@ -306,7 +306,7 @@
 }
 
 .overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
@@ -314,15 +314,16 @@
   font-weight: 900;
   color: white;
   mix-blend-mode: multiply;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.06);
   pointer-events: none;
+  border-radius: inherit;
 }
 
-.overlay.correct {
+.question-overlay.correct {
   color: #1b8f2e;
 }
 
-.overlay.wrong {
+.question-overlay.wrong {
   color: #d60000;
 }
 
