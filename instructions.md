@@ -30,3 +30,18 @@ The cursor should focus on the textbox every time the question appears.
 - Change the delay of the "correct" overlay to 300ms
 - The overlay should show up over the question box
 
+-- Ins 4 --
+- Remove eyebrow, subtitle, badge
+- Change header description to "Math Drills"
+- Generate and show a picture of a floor drill on the right
+- Remove the chip alt in custom selection
+
+-- Ins 5 --
+- Make header link to main page. Don't let the link have underline.
+
+-- Ins 6 --
+- Replace "floor-drill.svg" with "jackhammer.png".
+(Wrong action - Codex tried to create png instead of using my supplied one)
+
+-- Ins 6a --
+- I have placed a "jackhammer.png" in src/assets. Replace floor-drill.svg with this image.

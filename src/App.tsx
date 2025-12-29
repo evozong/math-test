@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react'
 import './App.css'
+import drillImg from './assets/jackhammer.png'
 
 type QuestionType = 'add20' | 'sub20' | 'mul9'
 
@@ -170,6 +171,16 @@ function App() {
     startCountdown()
   }
 
+  const goHome = (event?: MouseEvent<HTMLAnchorElement>) => {
+    if (event) event.preventDefault()
+    resetTimers()
+    setCountdownActive(false)
+    setTestActive(false)
+    setOverlay(null)
+    setAwaitingNext(false)
+    setView('home')
+  }
+
   const finishTest = () => {
     setTestActive(false)
     if (stopwatchRef.current) {
@@ -235,14 +246,13 @@ function App() {
     <div className="app-shell">
       <header className="hero">
         <div>
-          <p className="eyebrow">Bright Brain</p>
-          <h1>Quick math drills in a sunny palette.</h1>
-          <p className="subtitle">
-            Choose a set, race the clock, and review every answer. Mix addition, subtraction, and
-            multiplication to build your own challenge.
-          </p>
+          <a href="#" className="hero-link" onClick={(e) => goHome(e)}>
+            <h1>Math Drills</h1>
+          </a>
         </div>
-        <div className="badge">10 questions</div>
+        <div className="drill-art">
+          <img src={drillImg} alt="Illustration of a floor drill tool" />
+        </div>
       </header>
 
       {view === 'home' && (
@@ -250,7 +260,6 @@ function App() {
           <section className="panel">
             <div className="panel-head">
               <h2>Ready-made sets</h2>
-              <p className="muted">Jump straight into a focused drill.</p>
             </div>
             <div className="preset-grid">
               {PRESET_TESTS.map((preset) => (
@@ -274,8 +283,7 @@ function App() {
 
           <section className="panel">
             <div className="panel-head">
-              <h2>Custom mix</h2>
-              <p className="muted">Blend topics to build your own set.</p>
+              <h2>Build your own!</h2>
             </div>
             <div className="custom-grid">
               {(['add20', 'sub20', 'mul9'] as QuestionType[]).map((type) => (
@@ -286,7 +294,6 @@ function App() {
                     onChange={() => handleCustomToggle(type)}
                   />
                   <div>
-                    <p className="chip alt">mix</p>
                     <strong>
                       {type === 'add20' && 'Addition to 20'}
                       {type === 'sub20' && 'Subtraction to 20'}

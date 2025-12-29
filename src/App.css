@@ -7,7 +7,7 @@
 .hero {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
   padding: 28px 28px 20px;
   border-radius: 18px;
@@ -18,8 +18,17 @@
 
 .hero h1 {
   margin: 4px 0 8px;
-  font-size: 32px;
+  font-size: 34px;
   letter-spacing: -0.5px;
+}
+
+.hero-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.hero-link:hover h1 {
+  text-decoration: none;
 }
 
 .subtitle {
@@ -44,6 +53,19 @@
   font-weight: 700;
   align-self: center;
   box-shadow: var(--shadow-soft);
+}
+
+.drill-art {
+  flex: 0 0 220px;
+  display: flex;
+  justify-content: center;
+}
+
+.drill-art img {
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.12));
+  border-radius: 14px;
 }
 
 .panel-grid {
