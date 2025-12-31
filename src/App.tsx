@@ -358,6 +358,7 @@ function App() {
                   <input
                     ref={answerInputRef}
                     type="number"
+                    inputMode="numeric"
                     value={answer}
                     onChange={(e) => setAnswer(e.target.value)}
                     placeholder="?"
