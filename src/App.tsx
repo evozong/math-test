@@ -61,8 +61,18 @@ const shuffle = <T>(arr: T[]): T[] => {
 
 const buildQuestionSet = (types: QuestionType[], count = QUESTION_COUNT): Question[] => {
   const uniqueTypes = [...new Set(types)]
-  const pool = shuffle(uniqueTypes.flatMap(buildAllQuestions))
-  return pool.slice(0, count)
+  const pools = new Map(uniqueTypes.map(t => [t, shuffle(buildAllQuestions(t))]))
+  const pointers = new Map(uniqueTypes.map(t => [t, 0]))
+
+  const list: Question[] = []
+  for (let i = 0; i < count; i++) {
+    const available = uniqueTypes.filter(t => (pointers.get(t) ?? 0) < pools.get(t)!.length)
+    if (available.length === 0) break
+    const choice = available[Math.floor(Math.random() * available.length)]
+    list.push(pools.get(choice)![pointers.get(choice)!])
+    pointers.set(choice, pointers.get(choice)! + 1)
+  }
+  return list
 }
 
 const formatTime = (seconds: number) => {
