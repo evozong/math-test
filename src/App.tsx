@@ -50,11 +50,21 @@ const buildQuestion = (type: QuestionType): Question => {
   return { a, b, operand: '×', type: 'mul9', answer: a * b }
 }
 
+const questionKey = (q: Question) => `${q.a}-${q.operand}-${q.b}`
+
 const buildQuestionSet = (types: QuestionType[], count = QUESTION_COUNT) => {
   const list: Question[] = []
+  const used = new Set<string>()
   for (let i = 0; i < count; i += 1) {
     const choice = types[Math.floor(Math.random() * types.length)]
-    list.push(buildQuestion(choice))
+    let question: Question
+    let attempts = 0
+    do {
+      question = buildQuestion(choice)
+      attempts += 1
+    } while (used.has(questionKey(question)) && attempts < 100)
+    used.add(questionKey(question))
+    list.push(question)
   }
   return list
 }
