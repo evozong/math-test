@@ -32,41 +32,37 @@ const PRESET_TESTS: TestConfig[] = [
 
 const QUESTION_COUNT = 10
 
-const buildQuestion = (type: QuestionType): Question => {
+const buildAllQuestions = (type: QuestionType): Question[] => {
+  const questions: Question[] = []
   if (type === 'add20') {
-    const a = Math.floor(Math.random() * 10)
-    const b = Math.floor(Math.random() * 10)
-    return { a, b, operand: '+', type, answer: a + b }
+    for (let a = 0; a <= 9; a++)
+      for (let b = 0; b <= 9; b++)
+        questions.push({ a, b, operand: '+', type, answer: a + b })
+  } else if (type === 'sub20') {
+    for (let a = 0; a <= 20; a++)
+      for (let b = 0; b <= a; b++)
+        questions.push({ a, b, operand: '-', type, answer: a - b })
+  } else {
+    for (let a = 1; a <= 9; a++)
+      for (let b = 1; b <= 9; b++)
+        questions.push({ a, b, operand: '×', type: 'mul9', answer: a * b })
   }
-
-  if (type === 'sub20') {
-    const a = Math.floor(Math.random() * 21)
-    const b = Math.floor(Math.random() * (a + 1))
-    return { a, b, operand: '-', type, answer: a - b }
-  }
-
-  const a = Math.floor(Math.random() * 9) + 1
-  const b = Math.floor(Math.random() * 9) + 1
-  return { a, b, operand: '×', type: 'mul9', answer: a * b }
+  return questions
 }
 
-const questionKey = (q: Question) => `${q.a}-${q.operand}-${q.b}`
-
-const buildQuestionSet = (types: QuestionType[], count = QUESTION_COUNT) => {
-  const list: Question[] = []
-  const used = new Set<string>()
-  for (let i = 0; i < count; i += 1) {
-    const choice = types[Math.floor(Math.random() * types.length)]
-    let question: Question
-    let attempts = 0
-    do {
-      question = buildQuestion(choice)
-      attempts += 1
-    } while (used.has(questionKey(question)) && attempts < 100)
-    used.add(questionKey(question))
-    list.push(question)
+const shuffle = <T>(arr: T[]): T[] => {
+  const out = [...arr]
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]]
   }
-  return list
+  return out
+}
+
+const buildQuestionSet = (types: QuestionType[], count = QUESTION_COUNT): Question[] => {
+  const uniqueTypes = [...new Set(types)]
+  const pool = shuffle(uniqueTypes.flatMap(buildAllQuestions))
+  return pool.slice(0, count)
 }
 
 const formatTime = (seconds: number) => {
