@@ -133,6 +133,12 @@
   font-size: 13px;
 }
 
+a.primary {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+}
+
 .primary {
   background: #f6b800;
   color: #271501;

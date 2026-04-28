@@ -1,73 +1,54 @@
-# React + TypeScript + Vite
+# Math Drills
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A math practice app for addition, subtraction, and multiplication. Built with Next.js 16 + TypeScript, exported as a static site.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev      # http://localhost:3000
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Build
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+npm run build    # outputs static site to dist/
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Routes
+
+| URL | Description |
+|-----|-------------|
+| `/` | Home — preset set links and custom builder |
+| `/sets/add20` | Addition to 20 |
+| `/sets/sub20` | Subtraction to 20 |
+| `/sets/mul9` | Multiplication to 9 |
+| `/sets/custom` | Custom set builder |
+| `/sets/custom?i=add20&i=sub20` | Custom set with pre-selected types |
+
+Add `?autoStart` to any set URL to skip the Start button and begin the countdown immediately.
+
+## Project structure
+
+```
+app/
+  layout.tsx              # Root layout (header)
+  page.tsx                # Home page
+  globals.css             # Global styles
+  App.css                 # Component styles
+  components/
+    TestRunner.tsx        # Test + results UI
+    CustomSetBuilder.tsx  # Checkbox picker for custom sets
+  sets/
+    [slug]/page.tsx       # Preset set pages (add20, sub20, mul9)
+    custom/
+      page.tsx            # Custom set page
+      CustomPageContent.tsx
+  lib/
+    types.ts              # Shared types + set metadata
+    questions.ts          # Question generation logic
+public/
+  assets/
+    jackhammer.png
+  favicon-microsite-64.svg
 ```
