@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import type { TestConfig, Question, TestResponse } from '../lib/types'
 import { buildQuestionSet, QUESTION_COUNT } from '../lib/questions'
 
@@ -21,14 +21,9 @@ const formatTimeMs = (ms: number) => {
 
 type Phase = 'idle' | 'countdown' | 'active' | 'results'
 
-export default function TestRunner({
-  config,
-  autoStart,
-}: {
-  config: TestConfig
-  autoStart: boolean
-}) {
+export default function TestRunner({ config }: { config: TestConfig }) {
   const router = useRouter()
+  const autoStart = useSearchParams().has('autoStart')
 
   const [phase, setPhase] = useState<Phase>(() => (autoStart ? 'countdown' : 'idle'))
   const [questions, setQuestions] = useState<Question[]>(() =>
