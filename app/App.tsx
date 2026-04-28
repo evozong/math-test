@@ -1,6 +1,9 @@
+'use client'
+
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react'
 import './App.css'
-import drillImg from './assets/jackhammer.png'
+
+const drillImg = '/assets/jackhammer.png'
 
 type QuestionType = 'add20' | 'sub20' | 'mul9'
 
