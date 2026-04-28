@@ -5,6 +5,7 @@ import './App.css'
 
 export const metadata: Metadata = {
   title: 'Math Drills',
+  icons: { icon: '/favicon-microsite-64.svg' },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
