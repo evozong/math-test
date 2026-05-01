@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { TestConfig, Question, TestResponse } from '../lib/types'
 import { buildQuestionSet, QUESTION_COUNT } from '../lib/questions'
@@ -35,10 +35,12 @@ export default function TestRunner({ config }: { config: TestConfig }) {
   const [elapsedMs, setElapsedMs] = useState(0)
   const [totalTimeMs, setTotalTimeMs] = useState<number | null>(null)
   const [answer, setAnswer] = useState('')
+  const [remainderAnswer, setRemainderAnswer] = useState('')
   const [overlay, setOverlay] = useState<'correct' | 'wrong' | null>(null)
   const [awaitingNext, setAwaitingNext] = useState(false)
 
   const answerInputRef = useRef<HTMLInputElement | null>(null)
+  const remainderInputRef = useRef<HTMLInputElement | null>(null)
   const countdownRef = useRef<number | null>(null)
   const stopwatchRef = useRef<number | null>(null)
   const startTimeRef = useRef<number | null>(null)
@@ -86,6 +88,7 @@ export default function TestRunner({ config }: { config: TestConfig }) {
     setResponses([])
     setCurrentIndex(0)
     setAnswer('')
+    setRemainderAnswer('')
     setOverlay(null)
     setAwaitingNext(false)
     setElapsedMs(0)
@@ -101,9 +104,18 @@ export default function TestRunner({ config }: { config: TestConfig }) {
     const q = questions[currentIndex]
     if (!q || answer.trim() === '') return
 
+    const isRemainder = q.remainder !== undefined
+    if (isRemainder && remainderAnswer.trim() === '') {
+      remainderInputRef.current?.focus()
+      return
+    }
+
     const num = Number(answer)
-    const correct = num === q.answer
-    const updated = [...responses, { question: q, userAnswer: num, correct }]
+    const rem = isRemainder ? Number(remainderAnswer) : undefined
+    const correct = isRemainder
+      ? num === q.answer && rem === q.remainder
+      : num === q.answer
+    const updated = [...responses, { question: q, userAnswer: num, userRemainder: rem, correct }]
     const isLast = updated.length === questions.length
     const delay = correct ? 300 : 1000
 
@@ -115,6 +127,7 @@ export default function TestRunner({ config }: { config: TestConfig }) {
       setOverlay(null)
       setAwaitingNext(false)
       setAnswer('')
+      setRemainderAnswer('')
       if (isLast) {
         if (stopwatchRef.current !== null) { clearInterval(stopwatchRef.current); stopwatchRef.current = null }
         setTotalTimeMs(startTimeRef.current !== null ? performance.now() - startTimeRef.current : 0)
@@ -123,6 +136,13 @@ export default function TestRunner({ config }: { config: TestConfig }) {
         setCurrentIndex(i => i + 1)
       }
     }, delay)
+  }
+
+  const handleQuotientKeyDown = (e: KeyboardEvent<HTMLInputElement>, q: Question) => {
+    if (e.key === 'Enter' && q.remainder !== undefined && remainderAnswer.trim() === '') {
+      e.preventDefault()
+      remainderInputRef.current?.focus()
+    }
   }
 
   const score = responses.filter(r => r.correct).length
@@ -166,7 +186,8 @@ export default function TestRunner({ config }: { config: TestConfig }) {
         </div>
         <div className="review">
           {responses.map((entry, idx) => {
-            const { question, userAnswer, correct } = entry
+            const { question, userAnswer, userRemainder, correct } = entry
+            const hasRemainder = question.remainder !== undefined
             return (
               <div key={`${question.type}-${idx}`} className="review-row">
                 <div className="tag">{idx + 1}</div>
@@ -175,11 +196,27 @@ export default function TestRunner({ config }: { config: TestConfig }) {
                   <span className="operand">{question.operand}</span>
                   <span>{question.b}</span>
                   <span className="operand">=</span>
-                  <span className={correct ? 'correct' : 'wrong'}>{userAnswer}</span>
-                  {!correct && (
+                  {hasRemainder ? (
                     <>
-                      <span className="operand muted">/</span>
-                      <span className="correct"> {question.answer}</span>
+                      <span className={correct ? 'correct' : 'wrong'}>{userAnswer}</span>
+                      <span className="operand muted">r</span>
+                      <span className={correct ? 'correct' : 'wrong'}>{userRemainder ?? 0}</span>
+                      {!correct && (
+                        <>
+                          <span className="operand muted">/</span>
+                          <span className="correct">{question.answer} r {question.remainder}</span>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <span className={correct ? 'correct' : 'wrong'}>{userAnswer}</span>
+                      {!correct && (
+                        <>
+                          <span className="operand muted">/</span>
+                          <span className="correct"> {question.answer}</span>
+                        </>
+                      )}
                     </>
                   )}
                 </div>
@@ -236,9 +273,25 @@ export default function TestRunner({ config }: { config: TestConfig }) {
                 inputMode="numeric"
                 value={answer}
                 onChange={e => setAnswer(e.target.value)}
+                onKeyDown={e => handleQuotientKeyDown(e, q)}
                 placeholder="?"
                 disabled={awaitingNext}
               />
+              {q.remainder !== undefined && (
+                <>
+                  <span className="operand">r</span>
+                  <input
+                    ref={remainderInputRef}
+                    type="number"
+                    inputMode="numeric"
+                    value={remainderAnswer}
+                    onChange={e => setRemainderAnswer(e.target.value)}
+                    placeholder="?"
+                    disabled={awaitingNext}
+                    style={{ width: 80 }}
+                  />
+                </>
+              )}
             </div>
             <div className="actions">
               <button type="submit" className="primary" disabled={awaitingNext}>Submit</button>
