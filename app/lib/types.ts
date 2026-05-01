@@ -22,20 +22,23 @@ export type TestResponse = {
   correct: boolean
 }
 
+export type StaminaSettings = { startSecs: number; bonusSecs: number }
+
 export type SetInfo = {
   type: QuestionType
   name: string
   desc: string
+  stamina: StaminaSettings
 }
 
 export const SET_MAP = new Map<QuestionType, SetInfo>([
-  ['add20', { type: 'add20', name: 'Addition to 20',     desc: 'Numbers 0-9, all addition.' }],
-  ['sub20', { type: 'sub20', name: 'Subtraction to 20',  desc: 'Numbers 0-20 with a fair subtraction mix.' }],
-  ['mul9',   { type: 'mul9',   name: 'Multiplication to 9',          desc: 'Times tables up to 9.' }],
-  ['mul12',  { type: 'mul12',  name: 'Multiplication to 12',         desc: 'Times tables up to 12.' }],
-  ['div9',   { type: 'div9',   name: 'Division to 9',                desc: 'Clean division with no remainders, divisors up to 9.' }],
-  ['div12',  { type: 'div12',  name: 'Division to 12',               desc: 'Clean division with no remainders, divisors up to 12.' }],
-  ['div9r',  { type: 'div9r',  name: 'Division to 9 with Remainder', desc: 'Divisors up to 9 — enter the quotient and remainder.' }],
-  ['div12r', { type: 'div12r', name: 'Division to 12 with Remainder', desc: 'Divisors up to 12 — enter the quotient and remainder.' }],
+  ['add20',  { type: 'add20',  name: 'Addition to 20',                desc: 'Numbers 0-9, all addition.',                                  stamina: { startSecs: 30, bonusSecs: 5  } }],
+  ['sub20',  { type: 'sub20',  name: 'Subtraction to 20',             desc: 'Numbers 0-20 with a fair subtraction mix.',                   stamina: { startSecs: 30, bonusSecs: 5  } }],
+  ['mul9',   { type: 'mul9',   name: 'Multiplication to 9',           desc: 'Times tables up to 9.',                                       stamina: { startSecs: 30, bonusSecs: 6  } }],
+  ['mul12',  { type: 'mul12',  name: 'Multiplication to 12',          desc: 'Times tables up to 12.',                                      stamina: { startSecs: 30, bonusSecs: 7  } }],
+  ['div9',   { type: 'div9',   name: 'Division to 9',                 desc: 'Clean division with no remainders, divisors up to 9.',        stamina: { startSecs: 35, bonusSecs: 7  } }],
+  ['div12',  { type: 'div12',  name: 'Division to 12',                desc: 'Clean division with no remainders, divisors up to 12.',       stamina: { startSecs: 35, bonusSecs: 8  } }],
+  ['div9r',  { type: 'div9r',  name: 'Division to 9 with Remainder',  desc: 'Divisors up to 9 — enter the quotient and remainder.',        stamina: { startSecs: 40, bonusSecs: 10 } }],
+  ['div12r', { type: 'div12r', name: 'Division to 12 with Remainder', desc: 'Divisors up to 12 — enter the quotient and remainder.',       stamina: { startSecs: 45, bonusSecs: 12 } }],
 ])
 
