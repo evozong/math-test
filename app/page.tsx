@@ -17,9 +17,10 @@ export default function HomePage() {
                 <h3><Link href={`/sets/${type}`}>{name}</Link></h3>
                 <p className="muted">{desc}</p>
               </div>
-              <Link href={`/sets/${type}?autoStart`} className="primary">
-                Start
-              </Link>
+              <div className="card-actions">
+                <Link href={`/sets/${type}?autoStart`} className="primary">Start</Link>
+                <Link href={`/sets/${type}?mode=stamina&autoStart`} className="ghost">Stamina</Link>
+              </div>
             </div>
           ))}
         </div>

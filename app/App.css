@@ -442,6 +442,62 @@ a.primary {
   margin-top: 18px;
 }
 
+.card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.card-actions > * {
+  flex: 1;
+  text-align: center;
+}
+
+.stamina-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #d0f0d5;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  box-shadow: var(--shadow-soft);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.stamina-timer .dot {
+  background: #1a9a2e;
+  box-shadow: 0 0 0 6px rgba(26, 154, 46, 0.12);
+}
+
+.stamina-timer.urgent {
+  background: #ffe0d5;
+  border-color: rgba(199, 52, 0, 0.2);
+}
+
+.stamina-timer.urgent .dot {
+  background: #c73400;
+  box-shadow: 0 0 0 6px rgba(199, 52, 0, 0.15);
+}
+
+.stamina-info-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #d0f0d5;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a5c22;
+}
+
+.stamina-info-pill .sep {
+  color: #7ab87e;
+}
+
 .review-text .operand.muted {
   color: var(--muted);
 }
