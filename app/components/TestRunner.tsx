@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { TestConfig, Question, TestResponse } from '../lib/types'
+import { SET_MAP } from '../lib/types'
 import { buildQuestionSet, buildStaminaPool, QUESTION_COUNT } from '../lib/questions'
 
 const formatTime = (seconds: number) => {
@@ -26,8 +27,15 @@ export default function TestRunner({ config }: { config: TestConfig }) {
   const searchParams = useSearchParams()
   const autoStart = searchParams.has('autoStart')
   const isStamina = searchParams.get('mode') === 'stamina'
-  const staminaStartSecs = Math.max(5, Number(searchParams.get('start') || 30))
-  const staminaBonusSecs = Math.max(0, Number(searchParams.get('bonus') || 5))
+  const staminaSettings = config.types.reduce(
+    (acc, t) => {
+      const s = SET_MAP.get(t)?.stamina ?? { startSecs: 30, bonusSecs: 5 }
+      return { startSecs: Math.max(acc.startSecs, s.startSecs), bonusSecs: Math.max(acc.bonusSecs, s.bonusSecs) }
+    },
+    { startSecs: 0, bonusSecs: 0 }
+  )
+  const staminaStartSecs = staminaSettings.startSecs
+  const staminaBonusSecs = staminaSettings.bonusSecs
 
   const [phase, setPhase] = useState<Phase>(() => (autoStart ? 'countdown' : 'idle'))
   const [questions, setQuestions] = useState<Question[]>(() => {
