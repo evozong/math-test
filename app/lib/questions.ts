@@ -16,10 +16,28 @@ export const buildAllQuestions = (type: QuestionType): Question[] => {
     for (let a = 1; a <= 9; a++)
       for (let b = 1; b <= 9; b++)
         questions.push({ a, b, operand: '×', type: 'mul9', answer: a * b })
-  } else {
+  } else if (type === 'mul12') {
+    for (let a = 1; a <= 12; a++)
+      for (let b = 1; b <= 12; b++)
+        questions.push({ a, b, operand: '×', type: 'mul12', answer: a * b })
+  } else if (type === 'div9') {
     for (let b = 1; b <= 9; b++)
       for (let q = 1; q <= 9; q++)
         questions.push({ a: b * q, b, operand: '÷', type: 'div9', answer: q })
+  } else if (type === 'div12') {
+    for (let b = 1; b <= 12; b++)
+      for (let q = 1; q <= 12; q++)
+        questions.push({ a: b * q, b, operand: '÷', type: 'div12', answer: q })
+  } else if (type === 'div9r') {
+    for (let b = 2; b <= 9; b++)
+      for (let q = 1; q <= 9; q++)
+        for (let r = 1; r < b; r++)
+          questions.push({ a: b * q + r, b, operand: '÷', type: 'div9r', answer: q, remainder: r })
+  } else {
+    for (let b = 2; b <= 12; b++)
+      for (let q = 1; q <= 12; q++)
+        for (let r = 1; r < b; r++)
+          questions.push({ a: b * q + r, b, operand: '÷', type: 'div12r', answer: q, remainder: r })
   }
   return questions
 }
