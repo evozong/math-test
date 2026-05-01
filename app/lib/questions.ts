@@ -12,10 +12,14 @@ export const buildAllQuestions = (type: QuestionType): Question[] => {
     for (let a = 0; a <= 20; a++)
       for (let b = 0; b <= a; b++)
         questions.push({ a, b, operand: '-', type, answer: a - b })
-  } else {
+  } else if (type === 'mul9') {
     for (let a = 1; a <= 9; a++)
       for (let b = 1; b <= 9; b++)
         questions.push({ a, b, operand: '×', type: 'mul9', answer: a * b })
+  } else {
+    for (let b = 1; b <= 9; b++)
+      for (let q = 1; q <= 9; q++)
+        questions.push({ a: b * q, b, operand: '÷', type: 'div9', answer: q })
   }
   return questions
 }
