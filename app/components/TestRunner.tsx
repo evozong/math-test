@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { TestConfig, Question, TestResponse } from '../lib/types'
-import { buildQuestionSet, QUESTION_COUNT } from '../lib/questions'
+import { buildQuestionSet, buildStaminaPool, QUESTION_COUNT } from '../lib/questions'
 
 const formatTime = (seconds: number) => {
   const mins = Math.floor(seconds / 60)
@@ -23,17 +23,23 @@ type Phase = 'idle' | 'countdown' | 'active' | 'results'
 
 export default function TestRunner({ config }: { config: TestConfig }) {
   const router = useRouter()
-  const autoStart = useSearchParams().has('autoStart')
+  const searchParams = useSearchParams()
+  const autoStart = searchParams.has('autoStart')
+  const isStamina = searchParams.get('mode') === 'stamina'
+  const staminaStartSecs = Math.max(5, Number(searchParams.get('start') || 30))
+  const staminaBonusSecs = Math.max(0, Number(searchParams.get('bonus') || 5))
 
   const [phase, setPhase] = useState<Phase>(() => (autoStart ? 'countdown' : 'idle'))
-  const [questions, setQuestions] = useState<Question[]>(() =>
-    autoStart ? buildQuestionSet(config.types) : []
-  )
+  const [questions, setQuestions] = useState<Question[]>(() => {
+    if (!autoStart) return []
+    return isStamina ? buildStaminaPool(config.types) : buildQuestionSet(config.types)
+  })
   const [responses, setResponses] = useState<TestResponse[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [countdown, setCountdown] = useState(3)
   const [elapsedMs, setElapsedMs] = useState(0)
   const [totalTimeMs, setTotalTimeMs] = useState<number | null>(null)
+  const [staminaMs, setStaminaMs] = useState(0)
   const [answer, setAnswer] = useState('')
   const [remainderAnswer, setRemainderAnswer] = useState('')
   const [overlay, setOverlay] = useState<'correct' | 'wrong' | null>(null)
@@ -44,6 +50,7 @@ export default function TestRunner({ config }: { config: TestConfig }) {
   const countdownRef = useRef<number | null>(null)
   const stopwatchRef = useRef<number | null>(null)
   const startTimeRef = useRef<number | null>(null)
+  const staminaMsRef = useRef<number>(0)
 
   const clearTimers = () => {
     if (countdownRef.current !== null) { clearInterval(countdownRef.current); countdownRef.current = null }
@@ -59,14 +66,30 @@ export default function TestRunner({ config }: { config: TestConfig }) {
     }, 100)
   }
 
-  const startCountdownInterval = () => {
+  const startStaminaTimer = (initialMs: number) => {
+    if (stopwatchRef.current !== null) clearInterval(stopwatchRef.current)
+    staminaMsRef.current = initialMs
+    setStaminaMs(initialMs)
+    stopwatchRef.current = window.setInterval(() => {
+      const next = Math.max(0, staminaMsRef.current - 100)
+      staminaMsRef.current = next
+      setStaminaMs(next)
+      if (next <= 0) {
+        clearInterval(stopwatchRef.current!)
+        stopwatchRef.current = null
+        setPhase('results')
+      }
+    }, 100)
+  }
+
+  const startCountdownInterval = (onStart: () => void) => {
     if (countdownRef.current !== null) clearInterval(countdownRef.current)
     countdownRef.current = window.setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(countdownRef.current!)
           countdownRef.current = null
-          startStopwatch()
+          onStart()
           setPhase('active')
           return 0
         }
@@ -76,7 +99,14 @@ export default function TestRunner({ config }: { config: TestConfig }) {
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { if (autoStart) startCountdownInterval(); return clearTimers }, [])
+  useEffect(() => {
+    if (autoStart) {
+      startCountdownInterval(isStamina
+        ? () => startStaminaTimer(staminaStartSecs * 1000)
+        : startStopwatch)
+    }
+    return clearTimers
+  }, [])
 
   useEffect(() => {
     if (phase === 'active') answerInputRef.current?.focus()
@@ -84,7 +114,7 @@ export default function TestRunner({ config }: { config: TestConfig }) {
 
   const startTest = () => {
     clearTimers()
-    setQuestions(buildQuestionSet(config.types))
+    setQuestions(isStamina ? buildStaminaPool(config.types) : buildQuestionSet(config.types))
     setResponses([])
     setCurrentIndex(0)
     setAnswer('')
@@ -93,9 +123,12 @@ export default function TestRunner({ config }: { config: TestConfig }) {
     setAwaitingNext(false)
     setElapsedMs(0)
     setTotalTimeMs(null)
+    setStaminaMs(0)
     setCountdown(3)
     setPhase('countdown')
-    startCountdownInterval()
+    startCountdownInterval(isStamina
+      ? () => startStaminaTimer(staminaStartSecs * 1000)
+      : startStopwatch)
   }
 
   const handleSubmit = (e: FormEvent) => {
@@ -116,8 +149,13 @@ export default function TestRunner({ config }: { config: TestConfig }) {
       ? num === q.answer && rem === q.remainder
       : num === q.answer
     const updated = [...responses, { question: q, userAnswer: num, userRemainder: rem, correct }]
-    const isLast = updated.length === questions.length
+    const isLast = !isStamina && updated.length === questions.length
     const delay = correct ? 300 : 1000
+
+    if (isStamina && correct) {
+      staminaMsRef.current += staminaBonusSecs * 1000
+      setStaminaMs(staminaMsRef.current)
+    }
 
     setOverlay(correct ? 'correct' : 'wrong')
     setAwaitingNext(true)
@@ -153,9 +191,16 @@ export default function TestRunner({ config }: { config: TestConfig }) {
       <section className="test-area">
         <div className="top-row">
           <div>
-            <p className="muted small">Ready</p>
+            <p className="muted small">{isStamina ? 'Stamina Mode' : 'Ready'}</p>
             <h2>{config.name}</h2>
           </div>
+          {isStamina && (
+            <div className="stamina-info-pill">
+              <span>{staminaStartSecs}s start</span>
+              <span className="sep">·</span>
+              <span>+{staminaBonusSecs}s per correct</span>
+            </div>
+          )}
         </div>
         <div className="question-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <button className="primary" onClick={startTest}>Start</button>
@@ -165,23 +210,26 @@ export default function TestRunner({ config }: { config: TestConfig }) {
   }
 
   if (phase === 'results') {
+    const total = responses.length
     return (
       <section className="results">
         <div className="results-head">
           <div>
-            <p className="eyebrow">Finished</p>
-            <h2>Nice run!</h2>
+            <p className="eyebrow">{isStamina ? "Time's up" : 'Finished'}</p>
+            <h2>{isStamina ? 'Stamina over!' : 'Nice run!'}</h2>
             <p className="muted">Review your answers and jump back in.</p>
           </div>
           <div className="summary">
             <div>
               <p className="muted small">Score</p>
-              <h3>{score}/{QUESTION_COUNT}</h3>
+              <h3>{score}/{isStamina ? total : QUESTION_COUNT}</h3>
             </div>
-            <div>
-              <p className="muted small">Time</p>
-              <h3>{totalTimeMs !== null ? formatTimeMs(totalTimeMs) : '—'}</h3>
-            </div>
+            {!isStamina && (
+              <div>
+                <p className="muted small">Time</p>
+                <h3>{totalTimeMs !== null ? formatTimeMs(totalTimeMs) : '—'}</h3>
+              </div>
+            )}
           </div>
         </div>
         <div className="review">
@@ -242,15 +290,25 @@ export default function TestRunner({ config }: { config: TestConfig }) {
           <p className="muted small">Now playing</p>
           <h2>{config.name}</h2>
         </div>
-        <div className="stopwatch">
-          <span className="dot" />
-          <span>{formatTime(elapsedMs / 1000)}</span>
-        </div>
+        {isStamina ? (
+          <div className={`stamina-timer${staminaMs < 10000 ? ' urgent' : ''}`}>
+            <span className="dot" />
+            <span>{formatTime(staminaMs / 1000)}</span>
+          </div>
+        ) : (
+          <div className="stopwatch">
+            <span className="dot" />
+            <span>{formatTime(elapsedMs / 1000)}</span>
+          </div>
+        )}
       </div>
 
       <div className="status-row">
         <div className="counter">
-          Question <strong>{currentIndex + 1}</strong>/<span>{QUESTION_COUNT}</span>
+          {isStamina
+            ? <>Answered <strong>{responses.length}</strong></>
+            : <>Question <strong>{currentIndex + 1}</strong>/<span>{QUESTION_COUNT}</span></>
+          }
         </div>
         {phase === 'countdown' && (
           <div className="countdown-pill">Starting in {countdown}</div>
