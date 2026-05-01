@@ -5,9 +5,14 @@ import { useRouter } from 'next/navigation'
 import type { QuestionType } from '../lib/types'
 
 const TYPES: { type: QuestionType; label: string; sub: string }[] = [
-  { type: 'add20', label: 'Addition to 20', sub: '0-9 with +' },
-  { type: 'sub20', label: 'Subtraction to 20', sub: '0-20 with -' },
-  { type: 'mul9', label: 'Multiplication to 9', sub: '1-9 with ×' },
+  { type: 'add20',  label: 'Addition to 20',               sub: '0-9 with +' },
+  { type: 'sub20',  label: 'Subtraction to 20',            sub: '0-20 with -' },
+  { type: 'mul9',   label: 'Multiplication to 9',          sub: '1-9 with ×' },
+  { type: 'mul12',  label: 'Multiplication to 12',         sub: '1-12 with ×' },
+  { type: 'div9',   label: 'Division to 9',                sub: 'No remainders, divisors 1-9' },
+  { type: 'div12',  label: 'Division to 12',               sub: 'No remainders, divisors 1-12' },
+  { type: 'div9r',  label: 'Division to 9 with Remainder', sub: 'Quotient + remainder, divisors 2-9' },
+  { type: 'div12r', label: 'Division to 12 with Remainder', sub: 'Quotient + remainder, divisors 2-12' },
 ]
 
 export default function CustomSetBuilder() {
