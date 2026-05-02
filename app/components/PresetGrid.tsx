@@ -21,7 +21,7 @@ export default function PresetGrid({ sets }: { sets: SetInfo[] }) {
         {sets.map(({ type, name, desc, stamina }) => (
           <div key={type} className="card">
             <div>
-              <p className={`chip${isStamina ? ' alt' : ''}`}>
+              <p className="chip">
                 {isStamina ? `${stamina.startSecs}s · +${stamina.bonusSecs}s per correct` : '10 questions'}
               </p>
               <h3><Link href={`/sets/${type}`}>{name}</Link></h3>

@@ -1,22 +1,24 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { QuestionType } from '../lib/types'
 
 const TYPES: { type: QuestionType; label: string; sub: string }[] = [
-  { type: 'add20',  label: 'Addition to 20',               sub: '0-9 with +' },
-  { type: 'sub20',  label: 'Subtraction to 20',            sub: '0-20 with -' },
-  { type: 'mul9',   label: 'Multiplication to 9',          sub: '1-9 with ×' },
-  { type: 'mul12',  label: 'Multiplication to 12',         sub: '1-12 with ×' },
-  { type: 'div9',   label: 'Division to 9',                sub: 'No remainders, divisors 1-9' },
-  { type: 'div12',  label: 'Division to 12',               sub: 'No remainders, divisors 1-12' },
-  { type: 'div9r',  label: 'Division to 9 with Remainder', sub: 'Quotient + remainder, divisors 2-9' },
+  { type: 'add20',  label: 'Addition to 20',                sub: '0-9 with +' },
+  { type: 'sub20',  label: 'Subtraction to 20',             sub: '0-20 with -' },
+  { type: 'mul9',   label: 'Multiplication to 9',           sub: '1-9 with ×' },
+  { type: 'mul12',  label: 'Multiplication to 12',          sub: '1-12 with ×' },
+  { type: 'div9',   label: 'Division to 9',                 sub: 'No remainders, divisors 1-9' },
+  { type: 'div12',  label: 'Division to 12',                sub: 'No remainders, divisors 1-12' },
+  { type: 'div9r',  label: 'Division to 9 with Remainder',  sub: 'Quotient + remainder, divisors 2-9' },
   { type: 'div12r', label: 'Division to 12 with Remainder', sub: 'Quotient + remainder, divisors 2-12' },
 ]
 
 export default function CustomSetBuilder() {
   const [selected, setSelected] = useState<QuestionType[]>([])
+  const [mode, setMode] = useState<'timed' | 'stamina'>('timed')
   const router = useRouter()
 
   const toggle = (type: QuestionType) =>
@@ -26,11 +28,19 @@ export default function CustomSetBuilder() {
     const params = new URLSearchParams()
     selected.forEach(t => params.append('i', t))
     params.set('autoStart', '')
+    if (mode === 'stamina') params.set('mode', 'stamina')
     router.push(`/sets/custom?${params}`)
   }
 
   return (
     <>
+      <div className="panel-head">
+        <h2><Link href="/sets/custom">Build your own!</Link></h2>
+        <div className="mode-toggle">
+          <button className={mode === 'timed' ? 'active' : ''} onClick={() => setMode('timed')}>Timed</button>
+          <button className={mode === 'stamina' ? 'active' : ''} onClick={() => setMode('stamina')}>Stamina</button>
+        </div>
+      </div>
       <div className="custom-grid">
         {TYPES.map(({ type, label, sub }) => (
           <label key={type} className={`picker ${selected.includes(type) ? 'active' : ''}`}>
