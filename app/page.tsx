@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import CustomSetBuilder from './components/CustomSetBuilder'
+import SetCard from './components/SetCard'
 import { SET_MAP } from './lib/types'
 
 export default function HomePage() {
@@ -10,18 +11,8 @@ export default function HomePage() {
           <h2>Ready-made sets</h2>
         </div>
         <div className="preset-grid">
-          {[...SET_MAP.values()].map(({ type, name, desc }) => (
-            <div key={type} className="card">
-              <div>
-                <p className="chip">10 questions</p>
-                <h3><Link href={`/sets/${type}`}>{name}</Link></h3>
-                <p className="muted">{desc}</p>
-              </div>
-              <div className="card-actions">
-                <Link href={`/sets/${type}?autoStart`} className="primary">Start</Link>
-                <Link href={`/sets/${type}?mode=stamina&autoStart`} className="ghost">Stamina</Link>
-              </div>
-            </div>
+          {[...SET_MAP.values()].map(set => (
+            <SetCard key={set.type} set={set} />
           ))}
         </div>
       </section>
