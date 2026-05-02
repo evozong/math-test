@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import type { QuestionType } from '../lib/types'
 
 const TYPES: { type: QuestionType; label: string; sub: string }[] = [
@@ -18,7 +18,8 @@ const TYPES: { type: QuestionType; label: string; sub: string }[] = [
 
 export default function CustomSetBuilder() {
   const [selected, setSelected] = useState<QuestionType[]>([])
-  const [mode, setMode] = useState<'timed' | 'stamina'>('timed')
+  const searchParams = useSearchParams()
+  const isStamina = searchParams.get('mode') === 'stamina'
   const router = useRouter()
 
   const toggle = (type: QuestionType) =>
@@ -28,7 +29,7 @@ export default function CustomSetBuilder() {
     const params = new URLSearchParams()
     selected.forEach(t => params.append('i', t))
     params.set('autoStart', '')
-    if (mode === 'stamina') params.set('mode', 'stamina')
+    if (isStamina) params.set('mode', 'stamina')
     router.push(`/sets/custom?${params}`)
   }
 
@@ -36,10 +37,6 @@ export default function CustomSetBuilder() {
     <>
       <div className="panel-head">
         <h2><Link href="/sets/custom">Build your own!</Link></h2>
-        <div className="mode-toggle">
-          <button className={mode === 'timed' ? 'active' : ''} onClick={() => setMode('timed')}>Timed</button>
-          <button className={mode === 'stamina' ? 'active' : ''} onClick={() => setMode('stamina')}>Stamina</button>
-        </div>
       </div>
       <div className="custom-grid">
         {TYPES.map(({ type, label, sub }) => (

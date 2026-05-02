@@ -449,13 +449,31 @@ a.primary {
   margin-top: 18px;
 }
 
+.mode-panel {
+  margin-top: 22px;
+}
+
+.mode-panel-head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.mode-panel-head h2 {
+  margin: 0;
+}
+
+.mode-panel-head .mode-toggle {
+  justify-self: center;
+}
+
 .mode-toggle {
   display: flex;
   background: #f0ece0;
   border-radius: 10px;
   padding: 3px;
   gap: 2px;
-  margin-bottom: 10px;
 }
 
 .mode-toggle button {
@@ -504,6 +522,35 @@ a.primary {
 .stamina-timer.urgent .dot {
   background: #c73400;
   box-shadow: 0 0 0 6px rgba(199, 52, 0, 0.15);
+}
+
+@keyframes bonusTimerFlash {
+  0%   { background: #d0f0d5; transform: scale(1); }
+  20%  { background: #52e06a; transform: scale(1.08); }
+  60%  { background: #8ef59f; transform: scale(1.04); }
+  100% { background: #d0f0d5; transform: scale(1); }
+}
+
+@keyframes bonusPop {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  60%  { opacity: 1; transform: translateY(-22px) scale(1.1); }
+  100% { opacity: 0; transform: translateY(-36px) scale(0.9); }
+}
+
+.stamina-timer.bonus-flash {
+  animation: bonusTimerFlash 0.9s ease-out forwards;
+}
+
+.bonus-pop {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f6e1e;
+  pointer-events: none;
+  animation: bonusPop 0.9s ease-out forwards;
+  white-space: nowrap;
 }
 
 .stamina-info-pill {

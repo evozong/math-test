@@ -52,6 +52,7 @@ export default function TestRunner({ config }: { config: TestConfig }) {
   const [remainderAnswer, setRemainderAnswer] = useState('')
   const [overlay, setOverlay] = useState<'correct' | 'wrong' | null>(null)
   const [awaitingNext, setAwaitingNext] = useState(false)
+  const [bonusFlash, setBonusFlash] = useState<number | null>(null)
 
   const answerInputRef = useRef<HTMLInputElement | null>(null)
   const remainderInputRef = useRef<HTMLInputElement | null>(null)
@@ -164,6 +165,8 @@ export default function TestRunner({ config }: { config: TestConfig }) {
       const bonus = SET_MAP.get(q.type)?.stamina.bonusSecs ?? staminaBonusSecs
       staminaMsRef.current += bonus * 1000
       setStaminaMs(staminaMsRef.current)
+      setBonusFlash(bonus)
+      setTimeout(() => setBonusFlash(null), 900)
     }
 
     setOverlay(correct ? 'correct' : 'wrong')
@@ -286,7 +289,7 @@ export default function TestRunner({ config }: { config: TestConfig }) {
         </div>
         <div className="results-actions">
           <button className="primary" onClick={startTest}>Try again</button>
-          <button className="ghost" onClick={() => router.push('/')}>Choose a new test</button>
+          <button className="ghost" onClick={() => router.push(isStamina ? '/?mode=stamina' : '/')}>Choose a new test</button>
         </div>
       </section>
     )
@@ -300,9 +303,12 @@ export default function TestRunner({ config }: { config: TestConfig }) {
           <h2>{config.name}</h2>
         </div>
         {isStamina ? (
-          <div className={`stamina-timer${staminaMs < 10000 ? ' urgent' : ''}`}>
+          <div className={`stamina-timer${staminaMs < 10000 ? ' urgent' : ''}${bonusFlash !== null ? ' bonus-flash' : ''}`} style={{ position: 'relative' }}>
             <span className="dot" />
             <span>{formatTime(staminaMs / 1000)}</span>
+            {bonusFlash !== null && (
+              <span className="bonus-pop">+{bonusFlash}s</span>
+            )}
           </div>
         ) : (
           <div className="stopwatch">
