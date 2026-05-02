@@ -161,7 +161,8 @@ export default function TestRunner({ config }: { config: TestConfig }) {
     const delay = correct ? 300 : 1000
 
     if (isStamina && correct) {
-      staminaMsRef.current += staminaBonusSecs * 1000
+      const bonus = SET_MAP.get(q.type)?.stamina.bonusSecs ?? staminaBonusSecs
+      staminaMsRef.current += bonus * 1000
       setStaminaMs(staminaMsRef.current)
     }
 
