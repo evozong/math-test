@@ -83,6 +83,13 @@
   box-shadow: var(--shadow);
 }
 
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
 .panel-head h2 {
   margin: 2px 0 4px;
 }
