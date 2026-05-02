@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import Link from './Link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { QuestionType } from '../lib/types'
 

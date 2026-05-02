@@ -1,7 +1,7 @@
 'use client'
 
-import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import Link from './Link'
 import type { SetInfo } from '../lib/types'
 
 export default function PresetGrid({ sets }: { sets: SetInfo[] }) {
@@ -20,13 +20,10 @@ export default function PresetGrid({ sets }: { sets: SetInfo[] }) {
               <p className="chip">
                 {isStamina ? `${stamina.startSecs}s · +${stamina.bonusSecs}s per correct` : '10 questions'}
               </p>
-              <h3><Link href={isStamina ? `/sets/${type}?mode=stamina` : `/sets/${type}`}>{name}</Link></h3>
+              <h3><Link href={`/sets/${type}`}>{name}</Link></h3>
               <p className="muted">{desc}</p>
             </div>
-            <Link
-              href={isStamina ? `/sets/${type}?mode=stamina&autoStart` : `/sets/${type}?autoStart`}
-              className="primary"
-            >
+            <Link href={`/sets/${type}?autoStart`} className="primary">
               Start
             </Link>
           </div>
