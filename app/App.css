@@ -83,6 +83,13 @@
   box-shadow: var(--shadow);
 }
 
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
 .panel-head h2 {
   margin: 2px 0 4px;
 }
@@ -440,6 +447,127 @@ a.primary {
   display: flex;
   gap: 12px;
   margin-top: 18px;
+}
+
+.mode-panel {
+  margin-top: 22px;
+}
+
+.mode-panel-head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.mode-panel-head h2 {
+  margin: 0;
+}
+
+.mode-panel-head .mode-toggle {
+  justify-self: center;
+}
+
+.mode-toggle {
+  display: flex;
+  background: #f0ece0;
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.mode-toggle button {
+  flex: 1;
+  padding: 5px 8px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 0.15s ease;
+}
+
+.mode-toggle button.active {
+  background: white;
+  color: var(--ink);
+  box-shadow: var(--shadow-soft);
+}
+
+.stamina-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #d0f0d5;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  box-shadow: var(--shadow-soft);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.stamina-timer .dot {
+  background: #1a9a2e;
+  box-shadow: 0 0 0 6px rgba(26, 154, 46, 0.12);
+}
+
+.stamina-timer.urgent {
+  background: #ffe0d5;
+  border-color: rgba(199, 52, 0, 0.2);
+}
+
+.stamina-timer.urgent .dot {
+  background: #c73400;
+  box-shadow: 0 0 0 6px rgba(199, 52, 0, 0.15);
+}
+
+@keyframes bonusTimerFlash {
+  0%   { background: #d0f0d5; transform: scale(1); }
+  20%  { background: #52e06a; transform: scale(1.08); }
+  60%  { background: #8ef59f; transform: scale(1.04); }
+  100% { background: #d0f0d5; transform: scale(1); }
+}
+
+@keyframes bonusPop {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  60%  { opacity: 1; transform: translateY(-22px) scale(1.1); }
+  100% { opacity: 0; transform: translateY(-36px) scale(0.9); }
+}
+
+.stamina-timer.bonus-flash {
+  animation: bonusTimerFlash 0.9s ease-out forwards;
+}
+
+.bonus-pop {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f6e1e;
+  pointer-events: none;
+  animation: bonusPop 0.9s ease-out forwards;
+  white-space: nowrap;
+}
+
+.stamina-info-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #d0f0d5;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a5c22;
+}
+
+.stamina-info-pill .sep {
+  color: #7ab87e;
 }
 
 .review-text .operand.muted {

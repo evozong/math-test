@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
+import ModeToggle from '../../components/ModeToggle'
 import TestRunner from '../../components/TestRunner'
 import { SET_MAP } from '../../lib/types'
 import type { QuestionType } from '../../lib/types'
@@ -18,5 +19,12 @@ export default async function SetPage({
   if (!set) notFound()
 
   const config = { id: set.type, name: set.name, types: [set.type] }
-  return <Suspense><TestRunner config={config} /></Suspense>
+  return (
+    <>
+      <section>
+        <Suspense><ModeToggle /></Suspense>
+      </section>
+      <Suspense><TestRunner config={config} /></Suspense>
+    </>
+  )
 }

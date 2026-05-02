@@ -67,3 +67,16 @@ export const buildQuestionSet = (types: QuestionType[], count = QUESTION_COUNT):
   return list
 }
 
+export const buildStaminaPool = (types: QuestionType[], size = 1000): Question[] => {
+  const uniqueTypes = [...new Set(types)]
+  const result: Question[] = []
+  while (result.length < size) {
+    const batch: Question[] = []
+    for (const type of uniqueTypes) {
+      batch.push(...shuffle(buildAllQuestions(type)))
+    }
+    result.push(...shuffle(batch))
+  }
+  return result.slice(0, size)
+}
+
