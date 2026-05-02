@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { Suspense } from 'react'
+import Link from './components/Link'
 import './globals.css'
 import './App.css'
 
@@ -15,9 +16,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="app-shell">
           <header className="hero">
             <div>
-              <Link href="/" className="hero-link">
-                <h1>Math Drills</h1>
-              </Link>
+              <Suspense>
+                <Link href="/" className="hero-link">
+                  <h1>Math Drills</h1>
+                </Link>
+              </Suspense>
             </div>
             <div className="drill-art">
               <img src="/assets/jackhammer.png" alt="Illustration of a floor drill tool" />
